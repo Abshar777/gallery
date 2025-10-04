@@ -18,7 +18,16 @@ export default function Home() {
         fetchImage();
     }, []);
   return (
-    <div className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden select-none">
+    <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "black",
+        overflow: "hidden",
+        userSelect: "none",
+    }}  className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden select-none">
       {/* Replace /1.png with your actual image path (public/1.png) */}
       {loading ? <div className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden select-none">
         <Loader2 className="animate-spin" />
