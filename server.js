@@ -62,7 +62,7 @@ function main() {
                     });
                     // ✅ Store globally (accessible in API routes)
                     global.io = io;
-                    port = process.env.PORT || 3000;
+                    port = process.env.PORT || 3001;
                     server.listen(port, function () {
                         console.log("\uD83D\uDE80 Server running on http://localhost:".concat(port));
                     });
