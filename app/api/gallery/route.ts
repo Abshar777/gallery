@@ -28,13 +28,29 @@ export async function POST(request: NextRequest) {
 
 
 export async function PUT(request: NextRequest) {
-    try{
-        await dbConnect();
-        const body = await request.json();
-        await GalleryModel.updateMany({}, {current: false});
-        const gallery = await GalleryModel.findByIdAndUpdate(body._id, {current: true});
-        return NextResponse.json(gallery);
-    }catch(error){
-        return NextResponse.json({error: error}, {status: 500});
+    try {
+      await dbConnect();
+      const body = await request.json();
+  
+      await GalleryModel.updateMany({}, { current: false });
+      const gallery = await GalleryModel.findByIdAndUpdate(
+        body._id,
+        { current: true },
+        { new: true }
+      );
+  
+      // ✅ Trigger socket event here
+      const io = (global as any).io;
+      if (io) {
+        io.emit("galleryUpdated", gallery);
+        console.log("📡 Emitted galleryUpdated event");
+      } else {
+        console.log("⚠️ Socket.IO not initialized");
+      }
+  
+      return NextResponse.json(gallery);
+    } catch (error) {
+      return NextResponse.json({ error: error }, { status: 500 });
     }
-}
+  }
+  
