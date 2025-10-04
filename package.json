@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "ts-node server.ts",
-    "build": "next build && npx ts-node server.ts --outDir .",
+    "build": "next build ",
     "start": "node server.js"
   },
   "dependencies": {

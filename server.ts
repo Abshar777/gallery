@@ -3,7 +3,7 @@ const next = require("next");
 const { Server } = require("socket.io");
 
 
-const dev = false;
+const dev = true;
 const app = next({ dev });
 const handle = app.getRequestHandler();
 console.log(dev,"dev 🟢");

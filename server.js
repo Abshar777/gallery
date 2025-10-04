@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var createServer = require("http").createServer;
 var next = require("next");
 var Server = require("socket.io").Server;
-var dev = true;
+var dev = false;
 var app = next({ dev: dev });
 var handle = app.getRequestHandler();
 function main() {
