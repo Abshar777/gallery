@@ -25,7 +25,11 @@ export default function Home() {
       </div> : <img
         src={image || ""}
         alt="fullscreen image"
-        className="rotate-[-90deg] object-cover"
+        style={{
+            transform: "rotate(-90deg)",
+            objectFit: "cover"
+        }}
+        className=""
       />}
     
     </div>
