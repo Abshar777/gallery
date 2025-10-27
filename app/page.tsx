@@ -87,12 +87,12 @@ export default function Home() {
       }}
       className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden select-none"
     >
-      {loading ? (
+      {loading&&images.length<=0 ? (
         <div className="flex items-center justify-center w-screen h-screen bg-black overflow-hidden select-none">
           <Loader2 className="animate-spin" />
         </div>
       ) : imageFileTypes.includes(
-          images[index].split(".").pop()?.toLowerCase() || ""
+          images[index]?.split?.(".").pop()?.toLowerCase() || ""
         ) ? (
         <img
           src={images[index] || ""}
