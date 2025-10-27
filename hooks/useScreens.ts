@@ -12,8 +12,8 @@ export const useScreens = () => {
     const { data, isPending, isFetched, refetch, isFetching, ...rest } = useQueryData(["screens"], getScreens);
     useEffect(() => {
         if (data) {
-            setScreens((data as IScreen[]).map((screen: IScreen) => `screen ${screen.name}`));
-            setCurrentScreen(`screen ${(data as IScreen[])[0].name as string}`);
+            setScreens((data as IScreen[]).map((screen: IScreen) => `screen ${screen?.name}`));
+            setCurrentScreen(`screen ${(data as IScreen[])?.[0]?.name || "1"}`);
         }
     }, [data]);
     return { screens, isPending, isFetched, refetch, isFetching, ...rest };
