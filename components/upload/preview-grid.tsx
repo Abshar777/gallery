@@ -5,11 +5,14 @@ import { cn } from "@/lib/utils"
 type LocalFile = {
   id: string
   previewUrl: string
+  type: string
   isCurrent: boolean
   status: "pending" | "uploading" | "done" | "error"
   progress: number
   errorMessage?: string
 }
+
+const imageFileTypes =['png','jpg','jpeg','gif','webp','svg','ico','bmp','tiff','tif','heic','heif','avif','webp','svg','ico','bmp','tiff','tif','heic','heif','avif'];
 
 export function PreviewGrid({
   files,
@@ -21,7 +24,7 @@ export function PreviewGrid({
   onRemove: (id: string) => void
 }) {
   if (!files.length) return null
-
+  console.log(files);
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {files.map((f) => (
@@ -34,12 +37,18 @@ export function PreviewGrid({
           )}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={f.previewUrl || "/placeholder.svg"}
-            alt="Preview"
-            className="h-40 w-full object-cover"
-            crossOrigin="anonymous"
-          />
+         {
+          imageFileTypes.includes(f.type.split('/')[1]) ? (
+            <img
+              src={f.previewUrl || "/placeholder.svg"}
+              alt="Preview"
+              className="h-40 w-full object-cover"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <video src={f.previewUrl} className="h-40 w-full object-cover" controls />
+          )
+         }
           <figcaption className="p-2 flex items-center justify-between gap-2">
            
             <Button size="sm" variant="ghost" onClick={() => onRemove(f.id)}>

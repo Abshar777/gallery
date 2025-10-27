@@ -59,7 +59,7 @@ export function DragDropZone({
       <div className="flex flex-col items-center justify-center gap-3 text-center">
         <div className="text-sm text-muted-foreground">Drag and drop images here, or click to select</div>
         <label>
-          <input ref={fileInputRef} type="file" accept="image/*" multiple className="sr-only" onChange={onChoose} />
+          <input ref={fileInputRef} type="file" accept="image/*, video/*" multiple className="sr-only" onChange={onChoose} />
           <Button onClick={() => fileInputRef.current?.click()} type="button" variant="secondary" className="bg-secondary text-secondary-foreground">
             Choose files
           </Button>

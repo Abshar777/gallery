@@ -1,27 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DragDropZone } from "./drag-drop-zone";
 import { PreviewGrid } from "./preview-grid";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type LocalFile = {
   id: string;
   file: File;
   previewUrl: string;
+  type: string;
   isCurrent: boolean;
   status: "pending" | "uploading" | "done" | "error";
   progress: number;
   result?: {
     secure_url: string;
     public_id: string;
+    resource_type: string;
     width?: number;
     height?: number;
     bytes?: number;
     format?: string;
+    duration?: number;
   };
   errorMessage?: string;
 };
@@ -40,10 +42,11 @@ function uid() {
   return Math.random().toString(36).slice(2);
 }
 
-export function Uploader() {
+export function Uploader({ screenId }: { screenId: string }) {
   const [files, setFiles] = useState<LocalFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  // cleanup object URLs
+
+  // Cleanup preview URLs
   useEffect(() => {
     return () => {
       files.forEach((f) => URL.revokeObjectURL(f.previewUrl));
@@ -52,11 +55,12 @@ export function Uploader() {
 
   const onFilesAdded = useCallback((newFiles: File[]) => {
     const next: LocalFile[] = newFiles
-      .filter((f) => f.type.startsWith("image/"))
+      .filter((f) => f.type.startsWith("image/") || f.type.startsWith("video/"))
       .map((file) => ({
         id: uid(),
         file,
         previewUrl: URL.createObjectURL(file),
+        type: file.type,
         isCurrent: false,
         status: "pending" as const,
         progress: 0,
@@ -99,7 +103,7 @@ export function Uploader() {
     return data;
   }
 
-  // XMLHttpRequest upload for progress support
+  // Upload with progress support (for both image and video)
   function uploadWithProgress({
     file,
     cloudName,
@@ -160,13 +164,13 @@ export function Uploader() {
       const { signature, timestamp, apiKey, cloudName, folder } =
         await getSignature();
 
-      // Upload sequentially to keep UI simple; could parallelize if desired.
       for (const f of files) {
         setFiles((prev) =>
           prev.map((x) =>
             x.id === f.id ? { ...x, status: "uploading", progress: 0 } : x
           )
         );
+
         try {
           const result = await uploadWithProgress({
             file: f.file,
@@ -180,17 +184,21 @@ export function Uploader() {
                 prev.map((x) => (x.id === f.id ? { ...x, progress: pct } : x))
               ),
           });
-          await uploadToGallery(result.secure_url);
+
+          await uploadToGallery(result.secure_url, screenId);
           setFiles((prev) =>
             prev.map((x) =>
               x.id === f.id
-                ? { ...x, status: "done", result, progress: 100 }
+                ? {
+                    ...x,
+                    status: "done",
+                    result,
+                    progress: 100,
+                  }
                 : x
             )
           );
-       
         } catch (err: any) {
-         
           setFiles((prev) =>
             prev.map((x) =>
               x.id === f.id
@@ -205,32 +213,28 @@ export function Uploader() {
         }
       }
     } catch (e: any) {
-      toast.error("Error uploading image");
-      console.error("[v0] Signature error:", e?.message);
+      toast.error("Error uploading file");
+      console.error("[Uploader] Signature error:", e?.message);
     } finally {
       setIsUploading(false);
-      if(typeof window !== "undefined"){
-        window.location.reload();
-      }
+      if (typeof window !== "undefined") window.location.reload();
     }
   };
 
-  const uploadToGallery = async (url: string) => {
+  const uploadToGallery = async (url: string, screenId: string) => {
     try {
-      const res = await fetch("/api/gallery", {
+      const res = await fetch(`/api/gallery?screenId=${screenId}`, {
         method: "POST",
         body: JSON.stringify({ image: url }),
       });
       const data = await res.json();
       console.log(data);
-      toast.success("Image uploaded");
-   
+      toast.success("File uploaded successfully");
     } catch (error) {
-      toast.error("Error uploading image");
+      toast.error("Error uploading to gallery");
       console.error(error);
     }
   };
-  const hasDone = files.some((f) => f.status === "done");
 
   return (
     <section className="flex flex-col gap-6">
@@ -261,10 +265,10 @@ export function Uploader() {
         <div className="ml-auto flex items-center gap-3">
           <span className="text-muted-foreground text-sm">
             {selectedCount === 1
-              ? "1 image marked as current"
+              ? "1 file marked as current"
               : selectedCount > 1
-              ? `${selectedCount} images marked current`
-              : "No current image selected"}
+              ? `${selectedCount} files marked current`
+              : "No current file selected"}
           </span>
 
           <Button onClick={startUpload} disabled={!files.length || isUploading}>
@@ -272,8 +276,6 @@ export function Uploader() {
           </Button>
         </div>
       </div>
-
-  
     </section>
   );
 }
