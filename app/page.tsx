@@ -113,7 +113,7 @@ export default function Home() {
             transform: "rotate(-90deg)",
             objectFit: "cover",
             width: "100%",
-            height: "100%",
+            // height: "100%",
           }}
         />
       )}
