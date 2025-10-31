@@ -112,6 +112,8 @@ export default function Home() {
           style={{
             transform: "rotate(-90deg)",
             objectFit: "cover",
+            width: "100%",
+            height: "100%",
           }}
         />
       )}
