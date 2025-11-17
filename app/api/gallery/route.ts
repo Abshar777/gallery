@@ -81,7 +81,7 @@ export async function PUT(request: NextRequest) {
         currntIndex: lastIndex?.currentIndex ? lastIndex.currentIndex + 1 : 0,
       }
     }
-    const alredyCurrent = await GalleryModel.findOne({ _id: body._id,current: true });
+    const alredyCurrent = await GalleryModel.findOne({ _id: body._id, current: true });
     if (alredyCurrent) {
       await GalleryModel.findOneAndUpdate({ _id: body._id }, { current: false });
     } else {
@@ -91,7 +91,7 @@ export async function PUT(request: NextRequest) {
         { new: true }
       );
     }
-    console.log(alredyCurrent,alredyCurrent ? "true" : "false");
+    console.log(alredyCurrent, alredyCurrent ? "true" : "false");
 
 
 
@@ -107,6 +107,19 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(gallery);
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: error }, { status: 500 });
+  }
+}
+
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    await GalleryModel.findOneAndDelete({ _id: body.id });
+    return NextResponse.json({ message: "Gallery deleted successfully" });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: error }, { status: 500 });

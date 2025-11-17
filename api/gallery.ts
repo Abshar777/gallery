@@ -14,3 +14,9 @@ export const updateGallery = async (screenId: string, image: string) => {
     const response = await axios.put(`/api/gallery?screenId=${screenId}`, { image });
     return response.data;
 }
+
+
+export const deleteGallery = async (id: string) => {
+    const response = await axios.delete(`/api/gallery`, { data: { id } });
+    return response.data;
+}
